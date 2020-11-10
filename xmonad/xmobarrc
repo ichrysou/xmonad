@@ -1,77 +1,91 @@
--- xmobar configuration file 
---
--- Mess with this file to change the appearance of the contents of the
--- status bar which are not directly controlled by xmonad. You can see your
--- changes immediately by recompiling xmonad using "super-q".
--- 
--- There's a lot you can do here. Refer to "man xmobar". 
--- 
--- Author: David Brewer
--- Repository: https://github.com/davidbrewer/xmonad-ubuntu-conf
-
-
 Config { 
-  -- Set font and default foreground/background colors. Note that
-  -- the height of xmobar is controlled by the font you use.
-  font = "xft:Ubuntu Mono-18",
-  bgColor = "black",
-  fgColor = "grey",
 
-  -- Position is top left, taking up 94% of screen.
-  -- You are likely to have to tweak the width here based on the width
-  -- of your screen to make it play nicely with stalonetray, which we
-  -- want to be taking up the remainer of the space on the right side
-  -- of your screen.
-  position = TopW L 94, 
+   -- appearance
+     font =         "xft:Bitstream Vera Sans Mono:size=11:bold:antialias=true"
+   , bgColor =      "black"
+   , fgColor =      "#646464"
+   , position =     Top
+   , border =       BottomB
+   , borderColor =  "#646464"
 
-  -- list of commands which gather information about your system for
-  -- presentation in the bar. 
-  commands = [ 
-    -- Gather and format CPU usage information. 
-    -- If it's above 50%, we consider it high usage and make it red.  
-    Run Cpu [
-      "-H","50",
-      "--high","red"
-    ] 10,
+   -- layout
+   , sepChar =  "%"   -- delineator between plugin names and straight text
+   , alignSep = "}{"  -- separator between left-right alignment
+   , template = "%StdinReader% | %multicpu% | %coretemp% | %memory% | %dynnetwork% }{ %EDDN% | %date% || %kbd% "
 
-    -- Gather and format memory usage information
-    Run Memory [
-      "-t","Mem: <usedratio>%"
-    ] 10,
+   -- general behavior
+   , lowerOnStart =     True    -- send to bottom of window stack on start
+   , hideOnStart =      False   -- start with window unmapped (hidden)
+   , allDesktops =      True    -- show on all desktops
+   , overrideRedirect = True    -- set the Override Redirect flag (Xlib)
+   , pickBroadest =     False   -- choose widest display (multi-monitor)
+   , persistent =       True    -- enable/disable hiding (True = disabled)
 
-    -- Date formatting
-    Run Date "%a %b %_d %l:%M" "date" 10,
+   -- plugins
+   --   Numbers can be automatically colored according to their value. xmobar
+   --   decides color based on a three-tier/two-cutoff system, controlled by
+   --   command options:
+   --     --Low sets the low cutoff
+   --     --High sets the high cutoff
+   --
+   --     --low sets the color below --Low cutoff
+   --     --normal sets the color between --Low and --High cutoffs
+   --     --High sets the color above --High cutoff
+   --
+   --   The --template option controls how the plugin is displayed. Text
+   --   color can be set by enclosing in <fc></fc> tags. For more details
+   --   see http://projects.haskell.org/xmobar/#system-monitor-plugins.
+   , commands = 
 
-    -- Battery information. This is likely to require some customization
-    -- based upon your specific hardware. Or, for a desktop you may want
-    -- to just remove this section entirely.
-    Run Battery [
-      "-t", "<acstatus>: <left>%", 
-      "--", 
-      "-O", "AC",
-      "-o", "Bat",
-      "-h", "green",
-      "-l", "red"
-    ] 10,
+        -- weather monitor
+        [ Run Weather "EDDN" [ "--template", "<skyCondition> | <fc=#4682B4><tempC></fc>°C | <fc=#4682B4><rh></fc>% | <fc=#4682B4><pressure></fc>hPa"
+                             ] 36000
 
-    -- To get volume information, we run a custom bash script.
-    -- This is because the built-in volume support in xmobar is disabled
-    -- in Debian and derivatives like Ubuntu. 
-    Run Com "/bin/bash" ["-c", "~/.xmonad/get-volume"] "myvolume" 10,
+        -- network activity monitor (dynamic interface resolution)
+        , Run DynNetwork     [ "--template" , "<dev>: <tx>kB/s|<rx>kB/s"
+                             , "--Low"      , "1000"       -- units: B/s
+                             , "--High"     , "5000"       -- units: B/s
+                             , "--low"      , "darkgreen"
+                             , "--normal"   , "darkorange"
+                             , "--high"     , "darkred"
+                             ] 10
 
-    -- This line tells xmobar to read input from stdin. That's how we
-    -- get the information that xmonad is sending it for display.
-    Run StdinReader
-   ],
+        -- cpu activity monitor
+        , Run MultiCpu       [ "--template" , "Cpu: <total>%"
+                             , "--Low"      , "50"         -- units: %
+                             , "--High"     , "85"         -- units: %
+                             , "--low"      , "darkgreen"
+                             , "--normal"   , "darkorange"
+                             , "--high"     , "darkred"
+                             ] 10
 
-   -- Separator character used to wrape variables in the xmobar template 
-   sepChar = "%",
+        -- cpu core temperature monitor
+        , Run CoreTemp       [ "--template" , "Temp: <core0>°C"
+                             , "--Low"      , "70"        -- units: °C
+                             , "--High"     , "80"        -- units: °C
+                             , "--low"      , "darkgreen"
+                             , "--normal"   , "darkorange"
+                             , "--high"     , "darkred"
+                             ] 50
+                          
+        -- memory usage monitor
+        , Run Memory         [ "--template" ,"Mem: <usedratio>%"
+                             , "--Low"      , "20"        -- units: %
+                             , "--High"     , "90"        -- units: %
+                             , "--low"      , "darkgreen"
+                             , "--normal"   , "darkorange"
+                             , "--high"     , "darkred"
+                             ] 10
 
-   -- Alignment separater characer used in the xmobar template. Everything
-   -- before this will be aligned left, everything after aligned right.
-   alignSep = "}{",
+        -- time and date indicator 
+        --   (%F = y-m-d date, %a = day of week, %T = h:m:s time)
+        , Run Date           "<fc=#ABABAB>%F (%a) %T</fc>" "date" 10
 
-   -- Overall template for the layout of the xmobar contents. Note that
-   -- space is significant and can be used to add padding.
-   template = "%StdinReader% }{ %battery% | %cpu% | %memory% | Vol: %myvolume%    <fc=#e6744c>%date%</fc>     "
-}
+        -- keyboard layout indicator
+        , Run Kbd            [ ("us(dvorak)" , "<fc=#00008B>DV</fc>")
+                             , ("us"         , "<fc=#8B0000>US</fc>")
+                             ]
+       -- read xmonad status
+       , Run StdinReader
+        ]
+   }

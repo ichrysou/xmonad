@@ -2,18 +2,30 @@
 xmonad.hs:32:1: warning: [-Wdeprecations]
     Module ‘XMonad.Hooks.ICCCMFocus’ is deprecated:
       XMonad.Hooks.ICCCMFocus: xmonad>0.10 core merged issue 177
+   |
+32 | import XMonad.Hooks.ICCCMFocus
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 xmonad.hs:344:44: warning: [-Wdeprecations]
     In the use of ‘defaultConfig’
     (imported from XMonad, but defined in XMonad.Config):
     Deprecated: "Use def (from Data.Default, and re-exported by XMonad and XMonad.Config) instead."
+    |
+344 |   xmonad $ withUrgencyHook NoUrgencyHook $ defaultConfig {
+    |                                            ^^^^^^^^^^^^^
 
-xmonad.hs:357:29: warning: [-Wdeprecations]
+xmonad.hs:358:29: warning: [-Wdeprecations]
     In the use of ‘defaultConfig’
     (imported from XMonad, but defined in XMonad.Config):
     Deprecated: "Use def (from Data.Default, and re-exported by XMonad and XMonad.Config) instead."
+    |
+358 |   , manageHook = manageHook defaultConfig
+    |                             ^^^^^^^^^^^^^
 
-xmonad.hs:360:15: warning: [-Wdeprecations]
+xmonad.hs:361:15: warning: [-Wdeprecations]
     In the use of ‘takeTopFocus’
     (imported from XMonad.Hooks.ICCCMFocus):
     Deprecated: "XMonad.Hooks.ICCCMFocus: xmonad>0.10 core merged issue 177"
+    |
+361 |   , logHook = takeTopFocus <+> dynamicLogWithPP xmobarPP {
+    |               ^^^^^^^^^^^^

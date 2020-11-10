@@ -354,6 +354,7 @@ main = do
       setWMName "LG3D"
       windows $ W.greedyView startupWorkspace
       spawn "~/.xmonad/startup-hook"
+      >> spawn "compton --config /home/elias/.xmonad/compton.conf"
   , manageHook = manageHook defaultConfig
       <+> composeAll myManagementHooks
       <+> manageDocks

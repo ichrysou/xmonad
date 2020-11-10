@@ -1,0 +1,19 @@
+#!/bin/bash
+# 
+# xmonad startup script. Intended to be run from an xsession configuration
+# to run xmonad and some associated programs.
+# 
+# Author: David Brewer
+# Repository: https://github.com/davidbrewer/xmonad-ubuntu-conf
+
+#
+# GENERAL INITIALIZATION
+#
+
+# To set your backgrounds, run nitrogren /path/to/images
+
+nitrogen --restore /home/elias/projects/images/ &
+
+# Now, finally, start xmonad
+exec xmonad-session
+
